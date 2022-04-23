@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: starter
+#  security:
+#    user:
+#      name: user
+#      password: 12345678
+#      roles: USER,ADMIN
+server:
+  port: 8090
+logging:
+  level:
+    level: info
+  file:
+    name: starter.log
