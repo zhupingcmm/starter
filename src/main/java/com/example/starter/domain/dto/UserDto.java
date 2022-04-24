@@ -1,6 +1,8 @@
 package com.example.starter.domain.dto;
 
 import com.example.starter.annotation.ValidateEmail;
+import com.example.starter.annotation.ValidatePassword;
+import com.example.starter.annotation.ValidatePasswordMatch;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -9,6 +11,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Data
+@ValidatePasswordMatch
 public class UserDto implements Serializable {
     @NotNull
     @NotBlank
@@ -16,12 +19,10 @@ public class UserDto implements Serializable {
     private String username;
 
     @NotNull
-    @NotBlank
-    @Size(min = 8, max = 20, message = "password  size must be in 8~20")
+    @ValidatePassword
     private String password;
 
     @NotNull
-    @NotBlank
     @Size(min = 8, max = 20, message = "password  size must be in 8~20")
     private String matchingPassword;
 

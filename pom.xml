@@ -15,8 +15,14 @@
     <description>starter</description>
     <properties>
         <java.version>1.8</java.version>
+        <passay.version>1.6.0</passay.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.passay</groupId>
+            <artifactId>passay</artifactId>
+            <version>${passay.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
