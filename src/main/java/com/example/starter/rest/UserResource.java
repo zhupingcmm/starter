@@ -1,6 +1,5 @@
 package com.example.starter.rest;
 
-import com.sun.org.glassfish.gmbal.ParameterNames;
 import lombok.Data;
 import org.springframework.web.bind.annotation.*;
 
