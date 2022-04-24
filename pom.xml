@@ -16,12 +16,18 @@
     <properties>
         <java.version>1.8</java.version>
         <passay.version>1.6.0</passay.version>
+        <problem.version>0.27.0</problem.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
             <version>${passay.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>problem-spring-web</artifactId>
+            <version>${problem.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
