@@ -1,11 +1,16 @@
 spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/starter
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
   application:
     name: starter
-#  security:
-#    user:
-#      name: user
-#      password: 12345678
-#      roles: USER,ADMIN
 server:
   port: 8090
 logging:

@@ -1,6 +1,8 @@
 package com.example.starter.rest;
 
 import lombok.Data;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +21,11 @@ public class UserResource {
     @PutMapping("/greeting/{name}")
     public String changeGreeting(@PathVariable String name, @RequestBody Profile profile){
         return "hello" + name + ":" + profile.getAge();
+    }
+
+    @GetMapping("/principal")
+    public Authentication getPrincipal(Authentication authentication) {
+        return authentication;
     }
 
     @Data

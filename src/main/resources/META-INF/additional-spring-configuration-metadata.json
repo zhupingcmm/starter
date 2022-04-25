@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "server.datasource.driver-class-name",
+      "type": "java.lang.String",
+      "description": "Description for server.datasource.driver-class-name."
+  }
+] }
