@@ -2,6 +2,8 @@ package com.mf.starter.config;
 
 
 import com.mf.starter.security.filter.RestAuthenticationFilter;
+import com.mf.starter.security.ldap.LDAPAuthenticationProvider;
+import com.mf.starter.security.ldap.LDAPUserRepo;
 import com.mf.starter.security.userdetails.UserDetailsPasswordServiceImpl;
 import com.mf.starter.security.userdetails.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +19,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
@@ -39,24 +42,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final SecurityProblemSupport securityProblemSupport;
     private final UserDetailsServiceImpl userDetailsService;
     private final UserDetailsPasswordServiceImpl userDetailsPasswordService;
+    private final LDAPUserRepo ldapUserRepo;
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.exceptionHandling(exp -> exp
+        http.requestMatchers(req -> req.mvcMatchers("/api/**", "/authorize/**", "/admin/**"))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exp -> exp
                         .authenticationEntryPoint(securityProblemSupport)
                         .accessDeniedHandler(securityProblemSupport))
                 .authorizeRequests(req -> req
-                        .antMatchers("/authorize/**").permitAll()
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .antMatchers("/api/**").hasRole("USER")
                         .anyRequest().authenticated())
                 .addFilterAt(restAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-//                .addFilterAt(new RequestResponseLoggingFilter(objectMapper), BasicAuthenticationFilter.class)
+                .formLogin(form ->form.disable())
                 .csrf(csrf->csrf.disable());
     }
 
     private RestAuthenticationFilter restAuthenticationFilter() throws Exception {
         RestAuthenticationFilter filter = new RestAuthenticationFilter(objectMapper);
-        filter.setAuthenticationSuccessHandler(jsonAuthenticateSuccessHandler());
+        filter.setAuthenticationSuccessHandler(authenticateSuccessHandler());
         filter.setAuthenticationFailureHandler(authenticationFailureHandler());
         filter.setAuthenticationManager(authenticationManager());
         filter.setFilterProcessesUrl("/authorize/login");
@@ -75,7 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         };
     }
 
-    private AuthenticationSuccessHandler jsonAuthenticateSuccessHandler() {
+    private AuthenticationSuccessHandler authenticateSuccessHandler() {
         return (req, res, auth) -> {
             val successData = new HashMap<String, String>();
             successData.put("title", "success");
@@ -87,6 +92,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+        auth.authenticationProvider(new LDAPAuthenticationProvider(ldapUserRepo));
+
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder())
                 .userDetailsPasswordManager(userDetailsPasswordService);
