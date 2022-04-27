@@ -1,6 +1,7 @@
 package com.mf.starter.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +16,7 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name = "mooc_roles")
+@Builder
 public class Role implements GrantedAuthority, Serializable {
     private static final long serialVersionUID = 1L;
 
