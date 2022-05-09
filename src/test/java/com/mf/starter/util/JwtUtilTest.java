@@ -1,6 +1,7 @@
 package com.mf.starter.util;
 
 import com.mf.starter.config.AppProperties;
+import com.mf.starter.config.Constants;
 import com.mf.starter.domain.Role;
 import com.mf.starter.domain.User;
 import lombok.val;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashSet;
-import java.util.Set;
 
 @ExtendWith(SpringExtension.class)
 public class JwtUtilTest {
