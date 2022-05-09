@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final AppProperties appProperties;
+    private final JwtUtil jwtUtil;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (checkJwtToken(request)) {
@@ -52,8 +53,9 @@ public class JwtFilter extends OncePerRequestFilter {
     }
     private Optional<Claims> validateToken(HttpServletRequest request) {
         String jwtToken = request.getHeader(appProperties.getJwt().getHeader())
-                                    .replace(appProperties.getJwt().getPrefix(), "");
+                                    .replace(appProperties.getJwt().getPrefix(), "").trim();
         try {
+            jwtUtil.validateAccessToken(jwtToken);
           return Optional.of(Jwts.parserBuilder().setSigningKey(JwtUtil.KEY).build().parseClaimsJws(jwtToken).getBody());
         }catch (ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e){
             return Optional.empty();

@@ -2,6 +2,7 @@ package com.mf.starter.config;
 
 
 import com.mf.starter.security.filter.RestAuthenticationFilter;
+import com.mf.starter.security.jwt.JwtFilter;
 import com.mf.starter.security.ldap.LDAPAuthenticationProvider;
 import com.mf.starter.security.ldap.LDAPUserRepo;
 import com.mf.starter.security.userdetails.UserDetailsPasswordServiceImpl;
@@ -43,6 +44,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsServiceImpl userDetailsService;
     private final UserDetailsPasswordServiceImpl userDetailsPasswordService;
     private final LDAPUserRepo ldapUserRepo;
+    private final JwtFilter jwtFilter;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.requestMatchers(req -> req.mvcMatchers("/api/**", "/authorize/**", "/admin/**"))
@@ -54,6 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .antMatchers("/api/**").hasRole("USER")
                         .anyRequest().authenticated())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(restAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(form ->form.disable())
                 .csrf(csrf->csrf.disable());
@@ -113,6 +117,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers( "/public/**", "/error/**","/h2-console/**");
+        web.ignoring().antMatchers( "/authorize/**", "/error/**","/h2-console/**");
     }
 }
