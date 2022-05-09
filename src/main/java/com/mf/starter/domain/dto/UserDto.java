@@ -34,4 +34,10 @@ public class UserDto implements Serializable {
     @NotBlank
     @Size(min = 4, max = 50, message = "name size must be in 4~50")
     private String name;
+
+    @NotNull
+    @NotBlank
+    @Size(min = 11, max = 11, message = "mobile is 11")
+    private String mobile;
+
 }
