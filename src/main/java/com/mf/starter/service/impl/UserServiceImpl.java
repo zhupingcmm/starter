@@ -8,6 +8,7 @@ import com.mf.starter.repository.RoleRepo;
 import com.mf.starter.repository.UserRepo;
 import com.mf.starter.service.UserService;
 import com.mf.starter.util.JwtUtil;
+import com.mf.starter.util.TotpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -25,6 +27,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RoleRepo roleRepo;
+    private final TotpUtil totpUtil;
+
 
     @Override
     public Auth login(String username, String password) {
@@ -58,8 +62,19 @@ public class UserServiceImpl implements UserService {
                     roleSet.add(role);
                     val userToSave = user
                             .withAuthorities(roleSet)
+                            .withMfaKey(totpUtil.encodeKeyToString())
                             .withPassword(passwordEncoder.encode(user.getPassword()));
                     return userRepo.save(userToSave);
                 }).orElseThrow(() -> new RuntimeException(""));
+    }
+
+    @Override
+    public Optional<User> findOptionalByUsernameAndPassword(String username, String password) {
+        return userRepo.findByUsername(username).filter(user -> passwordEncoder.matches(password, user.getPassword()));
+    }
+
+    @Override
+    public Optional<String> createTotp(User user) {
+        return totpUtil.createTotp(user.getMfaKey());
     }
 }

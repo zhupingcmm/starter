@@ -18,8 +18,22 @@
         <passay.version>1.6.0</passay.version>
         <problem.version>0.27.0</problem.version>
         <jjwt.version>0.11.1</jjwt.version>
+        <otp.version>0.3.1</otp.version>
+        <redisson.version>3.14.1</redisson.version>
     </properties>
     <dependencies>
+        <!-- Java OTP 依赖 -->
+        <dependency>
+            <groupId>com.eatthepath</groupId>
+            <artifactId>java-otp</artifactId>
+            <version>${otp.version}</version>
+        </dependency>
+        <!-- Redisson 依赖 -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>${redisson.version}</version>
+        </dependency>
         <!-- JWT 依赖开始 -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

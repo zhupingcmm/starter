@@ -121,6 +121,21 @@ public class User implements UserDetails, Serializable {
     @Column(length = 254, unique = true, nullable = false)
     private String email;
 
+    @Builder.Default
+    @Getter
+    @Setter
+    @NotNull
+    @Column(name = "using_mfa", nullable = false)
+    private boolean usingMfa = false;
+
+
+    @Getter
+    @Setter
+    @NotNull
+    @JsonIgnore
+    @Column(name = "mfa_key", nullable = false)
+    private String mfaKey;
+
     /**
      * 角色列表，使用 Set 确保不重复
      */
