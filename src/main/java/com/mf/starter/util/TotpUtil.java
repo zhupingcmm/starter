@@ -20,7 +20,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class TotpUtil {
-    private static final long TIME_STEP = 60 * 5L;
+    private static final long TIME_STEP = 5 * 60 * 5L;
     private static final int PASSWORD_LENGTH = 6;
     private KeyGenerator keyGenerator;
     private TimeBasedOneTimePasswordGenerator totp;
@@ -47,7 +47,6 @@ public class TotpUtil {
     public String createTotp(final Key key, final Instant time) throws InvalidKeyException {
         val format = "%0" + PASSWORD_LENGTH + "d";
         return String.format(format, totp.generateOneTimePassword(key, time));
-//        return totp.generateOneTimePasswordString(key, time);
     }
 
     public Optional<String> createTotp(final String strKey) {

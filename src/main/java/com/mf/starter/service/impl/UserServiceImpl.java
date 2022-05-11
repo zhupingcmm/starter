@@ -15,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Optional;
@@ -31,11 +32,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Auth login(String username, String password) {
-        return userRepo.findByUsername(username)
-                .filter(user -> passwordEncoder.matches(password, user.getPassword()))
-                .map(user -> new Auth(jwtUtil.createAccessToken(user), jwtUtil.createRefreshToken(user)))
-                .orElseThrow(() -> new AccessDeniedException("Username or password is wrong"));
+    public Auth login(User user) {
+        return new Auth(jwtUtil.createAccessToken(user), jwtUtil.createRefreshToken(user));
     }
 
     @Override
@@ -70,11 +68,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> findOptionalByUsernameAndPassword(String username, String password) {
-        return userRepo.findByUsername(username).filter(user -> passwordEncoder.matches(password, user.getPassword()));
+        return userRepo.findByUsername(username)
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
     }
 
     @Override
     public Optional<String> createTotp(User user) {
         return totpUtil.createTotp(user.getMfaKey());
+    }
+
+    @Override
+    public Auth loginWithTotp(User user) {
+        val toSave = user.withMfaKey(totpUtil.encodeKeyToString());
+        val saved = userRepo.save(toSave);
+        return login(saved);
+    }
+
+    @Override
+    public Optional<User> findOptionalByUsername(String username) {
+        return userRepo.findByUsername(username);
     }
 }

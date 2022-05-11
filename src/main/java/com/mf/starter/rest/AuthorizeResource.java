@@ -6,6 +6,7 @@ import com.mf.starter.domain.MfaType;
 import com.mf.starter.domain.User;
 import com.mf.starter.domain.dto.LoginDto;
 import com.mf.starter.domain.dto.SendTotpDto;
+import com.mf.starter.domain.dto.TotpVerificationDto;
 import com.mf.starter.domain.dto.UserDto;
 import com.mf.starter.exception.DuplicateProblem;
 import com.mf.starter.service.UserCacheService;
@@ -65,7 +66,7 @@ public class AuthorizeResource {
                 .map(user -> {
                     //不使用多因子登陆，直接使用用户名密码登陆
                     if (!user.isUsingMfa()) {
-                        return ResponseEntity.ok().body(userService.login(loginDto.getUsername(), loginDto.getPassword()));
+                        return ResponseEntity.ok().body(userService.login(user));
                     }
                     //使用多因子登陆
                     val mfaId = userCacheService.cacheUser(user);
@@ -91,17 +92,26 @@ public class AuthorizeResource {
                 .flatMap(user -> userService.createTotp(user).map(code -> Pair.of(user, code)));
        if (result.isPresent()){
            result.ifPresent(pair -> {
-               log.debug("totp: {}", pair.getSecond());
+               log.info("totp: {}", pair.getSecond());
                if (sendTotpDto.getMfaType() == MfaType.SMS) {
-                   log.debug("send mobile service, code is {}", pair.getSecond());
+                   log.info("send mobile service, code is {}", pair.getSecond());
                } else {
-                   log.debug("send email service, code is {}", pair.getSecond());
+                   log.info("send email service, code is {}", pair.getSecond());
                }
            });
        } else {
            throw new RuntimeException("");
        }
 
+    }
+
+    @PostMapping("/totp")
+    public Auth verifyTotp(@Valid @RequestBody TotpVerificationDto totpVerificationDto) {
+         return userCacheService.verifyTotp(totpVerificationDto.getMfaId(), totpVerificationDto.getCode())
+                .map(User::getUsername)
+                .flatMap(userService::findOptionalByUsername)
+                 .map(userService::loginWithTotp)
+                 .orElseThrow(()-> new BadCredentialsException(""));
     }
 
 }
