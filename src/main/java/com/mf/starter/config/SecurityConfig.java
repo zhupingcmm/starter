@@ -56,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests(req -> req
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .antMatchers("/api/**").hasRole("USER")
+                        .antMatchers("/authorize/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(restAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -117,6 +118,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers( "/authorize/**", "/error/**","/h2-console/**");
+        web.ignoring().antMatchers( "/error/**","/h2-console/**");
     }
 }

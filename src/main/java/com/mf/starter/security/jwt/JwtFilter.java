@@ -28,6 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // check request header contain token info
         if (checkJwtToken(request)) {
            Optional<Claims> optional =  validateToken(request)
                     .filter(claims -> claims.get("authorities") != null);
